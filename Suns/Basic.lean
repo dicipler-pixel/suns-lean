@@ -74,10 +74,9 @@ theorem kappa_diverges : Tendsto kappa (𝓝[>] 0) atTop := by
   filter_upwards [self_mem_nhdsWithin] with δ hδ
   have hδ' : (0 : ℝ) < δ := hδ
   have hs : 0 < √δ := Real.sqrt_pos.mpr hδ'
-  rw [kappa_eq δ hδ'.le, div_le_div_iff₀ (by norm_num) (by positivity)]
-  rw [inv_mul_eq_div, div_mul_eq_mul_div, one_mul] at *
-  field_simp
-  nlinarith
+  rw [kappa_eq δ hδ'.le, show (√δ)⁻¹ / 2 = 1 / (2 * √δ) by ring]
+  gcongr
+  linarith
 
 /-! ## The integer record: exchange after one loop, restore after two -/
 
@@ -126,10 +125,8 @@ def hairForm (ε γ x₁ x₂ : ℝ) : ℝ := -ε * x₁ ^ 2 + γ * x₁ * x₂ 
 theorem hair_modal (ε γ : ℝ) : (!![-ε, γ; 0, -ε] : Matrix (Fin 2) (Fin 2) ℝ).charpoly =
     (Polynomial.X + Polynomial.C ε) ^ 2 := by
   rw [charpoly_fin_two]
-  simp only [of_apply, cons_val', cons_val_zero, cons_val_one, empty_val',
-    cons_val_fin_one, head_cons, head_fin_const]
-  simp [map_neg, sq]
-  ring
+  simp [trace_fin_two, det_fin_two, map_add, map_neg, map_mul, map_sub]
+  try ring
 
 /-- **Numerical abscissa, upper bound.** `xᵀAx ≤ (−ε + |γ|/2)‖x‖²`. -/
 theorem hair_abscissa_le (ε γ x₁ x₂ : ℝ) :
